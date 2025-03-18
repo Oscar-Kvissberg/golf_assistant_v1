@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const apiKey = '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'
+if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY saknas i miljövariablerna')
+}
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+})
 
 export async function POST(request: Request) {
     try {
-        const openai = new OpenAI({
-            apiKey: apiKey
-        })
-
         const { message, assistantId } = await request.json()
 
         if (!message) {
