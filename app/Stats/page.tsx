@@ -52,7 +52,7 @@ export default function Stats() {
     return (
         <div className="container mx-auto px-4 py-16">
             <h1 className="text-4xl font-bold text-gray-900 text-center mb-4">Din Produktivitet</h1>
-            <p className="text-gray-600 text-center mb-12 text-lg">Se hur mycket tid du sparat med vår AI-assistent</p>
+            <p className="text-gray-600 text-center mb-12 text-lg">Se hur mycket tid du sparat med vår Mejl-assistent</p>
 
             <div className="grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
@@ -90,7 +90,7 @@ export default function Stats() {
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg overflow-hidden">
                     <div className="p-8 text-white">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-2xl font-semibold">Alternativ Användning</h2>
+                            <h2 className="text-2xl font-semibold">Detta motsvarar:</h2>
                             <div className="p-2 bg-white bg-opacity-20 rounded-lg">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
