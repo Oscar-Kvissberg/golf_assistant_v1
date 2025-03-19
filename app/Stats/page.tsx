@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 export default function Stats() {
     const [emailCount, setEmailCount] = useState(0)
     const MINUTES_PER_EMAIL = 5 // Genomsnittlig tid att skriva ett mejl
+    const BALLS_PER_MINUTE = 2 // Antal bollar man kan slå per minut på rangen
 
     useEffect(() => {
         // Hämta antalet från localStorage när komponenten laddas
@@ -26,19 +27,25 @@ export default function Stats() {
         }
     }
 
-    const getFunFact = () => {
+    const calculateGolfBalls = () => {
         const totalMinutes = emailCount * MINUTES_PER_EMAIL
+        const totalBalls = totalMinutes * BALLS_PER_MINUTE
+        return totalBalls
+    }
 
-        if (totalMinutes < 60) {
-            return "Det räcker för att lyssna på några favoritlåtar! 🎵"
-        } else if (totalMinutes < 120) {
-            return "Du kunde ha sett ett avsnitt av din favoritserie istället! 📺"
-        } else if (totalMinutes < 180) {
-            return "Du har sparat tillräckligt med tid för att se en hel film! 🎬"
-        } else if (totalMinutes < 300) {
-            return "Du kunde ha spelat några rundor golf istället! ⛳"
+    const getFunFact = () => {
+        const totalBalls = calculateGolfBalls()
+
+        if (totalBalls < 50) {
+            return "Det räcker för en kort uppvärmning på rangen! 🏌️‍♂️"
+        } else if (totalBalls < 100) {
+            return "Nu börjar vi snacka om ett riktigt rangepass! 🏌️‍♂️"
+        } else if (totalBalls < 200) {
+            return "Du kunde ha övat som en proffs på rangen! 🏆"
+        } else if (totalBalls < 500) {
+            return "Det här är mer bollar än Tiger Woods slår på en träningsdag! 🐯"
         } else {
-            return "Du har sparat en hel arbetsdag! Dags för semester? 🏖️"
+            return "Du kunde ha öppnat din egen driving range! 🏌️‍♂️🎯"
         }
     }
 
@@ -68,9 +75,12 @@ export default function Stats() {
 
                 <div className="bg-white shadow-lg rounded-lg p-6 md:col-span-2">
                     <div className="text-center">
-                        <h2 className="text-xl mb-2">Kul Att Veta!</h2>
+                        <h2 className="text-xl mb-2">Så här många bollar hade du kunnat slå på rangen istället:</h2>
+                        <p className="text-4xl font-bold text-indigo-600 mb-2">
+                            {calculateGolfBalls()} bollar
+                        </p>
                         <p className="text-lg text-gray-700">
-                            Med den tiden du sparat kunde du ha gjort något annat kul...
+                            Med den sparade tiden kunde du ha slagit så här många bollar på rangen...
                         </p>
                         <p className="text-xl font-semibold text-indigo-600 mt-2">
                             {getFunFact()}
