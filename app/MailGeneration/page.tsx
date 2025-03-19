@@ -36,14 +36,13 @@ export default function MailGeneration() {
             })
 
             const data = await response.json()
-            console.log('Received data:', data)
-
+            
             if (!response.ok) {
                 throw new Error(data.error || 'Något gick fel vid generering av svar')
             }
 
-            if (!data || !data.response) {
-                throw new Error('Inget svar mottaget från servern')
+            if (!data || typeof data.response !== 'string') {
+                throw new Error('Ogiltig svarsformat från servern')
             }
 
             setGeneratedResponse(data.response)
@@ -51,7 +50,7 @@ export default function MailGeneration() {
 
         } catch (err) {
             console.error('Error:', err)
-            setError(err instanceof Error ? err.message : 'Ett fel uppstod')
+            setError(err instanceof Error ? err.message : 'Ett fel uppstod vid generering av svar')
         } finally {
             setIsLoading(false)
         }
