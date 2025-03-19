@@ -16,26 +16,38 @@ export async function POST(request: Request) {
             )
         }
 
+        if (!process.env.OPENAI_API_KEY) {
+            console.error('API-nyckel saknas')
+            return NextResponse.json(
+                { error: 'API-nyckel saknas' },
+                { status: 500 }
+            )
+        }
+
         // Skapa en thread
         const thread = await openai.beta.threads.create()
+        console.log('Thread skapad:', thread.id)
 
         // Skapa ett meddelande
         await openai.beta.threads.messages.create(thread.id, {
             role: 'user',
             content: message
         })
+        console.log('Meddelande skapat')
 
         // Kör assistenten
         const run = await openai.beta.threads.runs.create(thread.id, {
             assistant_id: assistantId
         })
+        console.log('Run skapad:', run.id)
 
         // Vänta på svar
         let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
         while (runStatus.status !== 'completed') {
             if (runStatus.status === 'failed' || runStatus.status === 'cancelled') {
+                console.error('Run misslyckades:', runStatus)
                 return NextResponse.json(
-                    { error: 'Assistenten kunde inte generera ett svar' },
+                    { error: `Assistenten misslyckades: ${runStatus.status}` },
                     { status: 500 }
                 )
             }
@@ -48,6 +60,7 @@ export async function POST(request: Request) {
         const assistantMessage = messages.data[0]
 
         if (!assistantMessage || !assistantMessage.content || !assistantMessage.content[0]) {
+            console.error('Inget svar mottaget:', messages)
             return NextResponse.json(
                 { error: 'Inget svar mottaget från assistenten' },
                 { status: 500 }
@@ -62,15 +75,16 @@ export async function POST(request: Request) {
             })
         }
 
+        console.error('Oväntat svarsformat:', messageContent)
         return NextResponse.json(
             { error: 'Oväntat svarsformat från assistenten' },
             { status: 500 }
         )
 
     } catch (error) {
-        console.error('Error in handler:', error)
+        console.error('Detaljerat fel:', error)
         return NextResponse.json(
-            { error: 'Ett fel uppstod vid generering av svar' },
+            { error: `Ett fel uppstod: ${error instanceof Error ? error.message : 'Okänt fel'}` },
             { status: 500 }
         )
     }
