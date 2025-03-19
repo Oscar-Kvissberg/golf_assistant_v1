@@ -61,17 +61,17 @@ export default function MailGeneration() {
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">E-post Assistent</h1>
 
-            <div className="space-y-4">
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        {error}
-                    </div>
-                )}
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block mb-2">Klistra in ditt e-postmeddelande här:</label>
                     <textarea
-                        className="w-full p-2 border rounded-md min-h-[200px]"
+                        className="w-full p-2 border rounded-md min-h-[400px]"
                         value={inputMail}
                         onChange={(e) => setInputMail(e.target.value)}
                         placeholder="Klistra in e-postmeddelandet här..."
@@ -79,6 +79,18 @@ export default function MailGeneration() {
                     />
                 </div>
 
+                <div>
+                    <label className="block mb-2">Genererat svar:</label>
+                    <textarea
+                        className="w-full p-2 border rounded-md min-h-[400px]"
+                        value={generatedResponse}
+                        readOnly
+                        placeholder={isLoading ? "Genererar svar..." : "Det genererade svaret kommer att visas här..."}
+                    />
+                </div>
+            </div>
+
+            <div className="mt-4">
                 <button
                     onClick={handleSubmit}
                     className={`${isLoading
@@ -109,16 +121,6 @@ export default function MailGeneration() {
                         </>
                     ) : 'Generera Svar'}
                 </button>
-
-                <div>
-                    <label className="block mb-2">Genererat svar:</label>
-                    <textarea
-                        className="w-full p-2 border rounded-md min-h-[200px]"
-                        value={generatedResponse}
-                        readOnly
-                        placeholder={isLoading ? "Genererar svar..." : "Det genererade svaret kommer att visas här..."}
-                    />
-                </div>
             </div>
         </div>
     )
