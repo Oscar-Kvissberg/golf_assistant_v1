@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { HomeIcon, EnvelopeIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 import { useRef, useEffect, useState } from 'react'
 
 export default function NavBar() {
@@ -47,28 +48,31 @@ export default function NavBar() {
                 <Link
                     ref={homeRef}
                     href="/"
-                    className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 ${
+                    className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 flex items-center gap-2 ${
                         pathname === '/' ? 'text-blue-600' : 'hover:text-gray-600'
                     }`}
                 >
+                    <HomeIcon className="w-5 h-5" />
                     Hem
                 </Link>
                 <Link
                     ref={mailRef}
                     href="/MailGeneration"
-                    className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 ${
+                    className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 flex items-center gap-2 ${
                         pathname === '/MailGeneration' ? 'text-blue-600' : 'hover:text-gray-600'
                     }`}
                 >
+                    <EnvelopeIcon className="w-5 h-5" />
                     E-post Assistent
                 </Link>
                 <Link
                     ref={statsRef}
                     href="/Stats"
-                    className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 ${
+                    className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 flex items-center gap-2 ${
                         pathname === '/Stats' ? 'text-blue-600' : 'hover:text-gray-600'
                     }`}
                 >
+                    <ChartBarIcon className="w-5 h-5" />
                     Statistik
                 </Link>
             </div>

@@ -50,41 +50,56 @@ export default function Stats() {
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Statistik</h1>
+        <div className="container mx-auto px-4 py-16">
+            <h1 className="text-4xl font-bold text-gray-900 text-center mb-4">Din Produktivitet</h1>
+            <p className="text-gray-600 text-center mb-12 text-lg">Se hur mycket tid du sparat med vår AI-assistent</p>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <div className="bg-white shadow-lg rounded-lg p-6">
-                    <div className="text-center">
-                        <h2 className="text-xl mb-2">Genererade E-post Svar</h2>
-                        <p className="text-4xl font-bold text-blue-600">{emailCount}</p>
+            <div className="grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                    <div className="p-8">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-gray-700">Genererade Svar</h2>
+                            <div className="p-2 bg-blue-50 rounded-lg">
+                                <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-5xl font-bold text-blue-600 mb-2">{emailCount}</p>
+                        <p className="text-gray-500">e-postmeddelanden</p>
                     </div>
                 </div>
 
-                <div className="bg-white shadow-lg rounded-lg p-6">
-                    <div className="text-center">
-                        <h2 className="text-xl mb-2">Sparad Tid</h2>
-                        <p className="text-4xl font-bold text-green-600">
-                            {calculateTimeSaved()}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-2">
-                            Baserat på en genomsnittlig tid på {MINUTES_PER_EMAIL} minuter per mejl
-                        </p>
+                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                    <div className="p-8">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-gray-700">Sparad Tid</h2>
+                            <div className="p-2 bg-green-50 rounded-lg">
+                                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-5xl font-bold text-green-600 mb-2">{calculateTimeSaved()}</p>
+                        <p className="text-gray-500">baserat på {MINUTES_PER_EMAIL} min per mejl</p>
                     </div>
                 </div>
+            </div>
 
-                <div className="bg-white shadow-lg rounded-lg p-6 md:col-span-2">
-                    <div className="text-center">
-                        <h2 className="text-xl mb-2">Så här många bollar hade du kunnat slå på rangen istället:</h2>
-                        <p className="text-4xl font-bold text-indigo-600 mb-2">
-                            {calculateGolfBalls()} bollar
-                        </p>
-                        <p className="text-lg text-gray-700">
-                            Med den sparade tiden kunde du ha slagit så här många bollar på rangen...
-                        </p>
-                        <p className="text-xl font-semibold text-indigo-600 mt-2">
-                            {getFunFact()}
-                        </p>
+            <div className="mt-8 max-w-5xl mx-auto">
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg overflow-hidden">
+                    <div className="p-8 text-white">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-2xl font-semibold">Alternativ Användning</h2>
+                            <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-6xl font-bold mb-4">{calculateGolfBalls()}</p>
+                        <p className="text-xl mb-2 text-white text-opacity-90">golfbollar på rangen</p>
+                        <p className="text-white text-opacity-90 text-lg">{getFunFact()}</p>
                     </div>
                 </div>
             </div>
