@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
       <body className={`${inter.className} bg-gradient-to-b from-gray-50 to-white min-h-screen`}>
         <NavBar />
         {children}
