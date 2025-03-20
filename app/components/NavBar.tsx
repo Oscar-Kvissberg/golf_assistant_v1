@@ -45,7 +45,7 @@ export default function NavBar() {
                         height={32}
                         className="object-contain"
                     />
-                    <span className="ml-2 text-xl font-semibold text-gray-900">Vasatorps GK</span>
+                    <span className="ml-2 text-xl font-semibold text-gray-900 hidden lg:inline">Vasatorps GK</span>
                 </div>
 
                 {/* Navigation Links - Centered */}
@@ -63,31 +63,31 @@ export default function NavBar() {
                     <Link
                         ref={homeRef}
                         href="/"
-                        className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 flex items-center gap-2 ${
+                        className={`z-10 mx-2 sm:mx-6 px-2 sm:px-4 py-2 transition-colors duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base ${
                             pathname === '/' ? 'text-blue-600' : 'hover:text-gray-600'
                         }`}
                     >
-                        <HomeIcon className="w-5 h-5" />
+                        <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         Hem
                     </Link>
                     <Link
                         ref={mailRef}
                         href="/MailGeneration"
-                        className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 flex items-center gap-2 ${
+                        className={`z-10 mx-2 sm:mx-6 px-2 sm:px-4 py-2 transition-colors duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base ${
                             pathname === '/MailGeneration' ? 'text-blue-600' : 'hover:text-gray-600'
                         }`}
                     >
-                        <EnvelopeIcon className="w-5 h-5" />
-                        E-post Assistent
+                        <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        E-post
                     </Link>
                     <Link
                         ref={statsRef}
                         href="/Stats"
-                        className={`z-10 mx-6 px-4 py-2 transition-colors duration-300 flex items-center gap-2 ${
+                        className={`z-10 mx-2 sm:mx-6 px-2 sm:px-4 py-2 transition-colors duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base ${
                             pathname === '/Stats' ? 'text-blue-600' : 'hover:text-gray-600'
                         }`}
                     >
-                        <ChartBarIcon className="w-5 h-5" />
+                        <ChartBarIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         Statistik
                     </Link>
                 </div>
