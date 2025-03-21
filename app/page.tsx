@@ -47,7 +47,7 @@ export default function Home() {
             <div className="bg-gray-50/80 backdrop-blur-sm rounded-lg p-4 text-left">
               <p className="text-gray-700 font-mono h-6">
                 <Typewriter 
-                  text="Låt Assistenten hjälpa dig att skriva professionella e-postsvar på sekunder..." 
+                  text="Låt Assistenten hjälpa dig att skriva professionella e-postsvar på några sekunder..." 
                   delay={40}
                   restartDelay={2000}
                 />

@@ -78,7 +78,7 @@ export default function NavBar() {
                         }`}
                     >
                         <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                        E-post
+                        Generering
                     </Link>
                     <Link
                         ref={statsRef}
