@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { HomeIcon, EnvelopeIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 import { useRef, useEffect, useState } from 'react'
+import { clubs } from '../config/clubs'
 
 export default function NavBar() {
     const pathname = usePathname()
@@ -13,11 +14,15 @@ export default function NavBar() {
     const mailRef = useRef<HTMLAnchorElement>(null)
     const statsRef = useRef<HTMLAnchorElement>(null)
 
+    // Extract club from pathname
+    const clubKey = pathname.split('/')[1]
+    const clubConfig = clubs[clubKey] || clubs.vasatorp // Fallback till Vasatorp om klubben inte hittas
+
     useEffect(() => {
         const updateIndicator = () => {
             let currentRef = homeRef
-            if (pathname === '/MailGeneration') currentRef = mailRef
-            if (pathname === '/Stats') currentRef = statsRef
+            if (pathname.includes('/MailGeneration')) currentRef = mailRef
+            if (pathname.includes('/Stats')) currentRef = statsRef
 
             if (currentRef.current) {
                 const { offsetLeft, offsetWidth } = currentRef.current
@@ -39,13 +44,15 @@ export default function NavBar() {
                 {/* Logo and Club Name - Absolute positioned */}
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center">
                     <Image 
-                        src="/Vasatorp_logga.png"
-                        alt="Vasatorps GK"
+                        src={clubConfig.logo}
+                        alt={clubConfig.displayName}
                         width={32}
                         height={32}
                         className="object-contain"
                     />
-                    <span className="ml-2 text-xl font-semibold text-gray-900 hidden lg:inline">Vasatorps GK</span>
+                    <span className="ml-2 text-xl font-semibold text-gray-900 hidden lg:inline">
+                        {clubConfig.displayName}
+                    </span>
                 </div>
 
                 {/* Navigation Links - Centered */}
@@ -62,9 +69,9 @@ export default function NavBar() {
                     
                     <Link
                         ref={homeRef}
-                        href="/"
+                        href={`/${clubKey}`}
                         className={`z-10 mx-2 sm:mx-6 px-2 sm:px-4 py-2 transition-colors duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base ${
-                            pathname === '/' ? 'text-blue-600' : 'hover:text-gray-600'
+                            pathname === `/${clubKey}` ? 'text-blue-600' : 'hover:text-gray-600'
                         }`}
                     >
                         <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -72,9 +79,9 @@ export default function NavBar() {
                     </Link>
                     <Link
                         ref={mailRef}
-                        href="/MailGeneration"
+                        href={`/${clubKey}/MailGeneration`}
                         className={`z-10 mx-2 sm:mx-6 px-2 sm:px-4 py-2 transition-colors duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base ${
-                            pathname === '/MailGeneration' ? 'text-blue-600' : 'hover:text-gray-600'
+                            pathname.includes('/MailGeneration') ? 'text-blue-600' : 'hover:text-gray-600'
                         }`}
                     >
                         <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -82,9 +89,9 @@ export default function NavBar() {
                     </Link>
                     <Link
                         ref={statsRef}
-                        href="/Stats"
+                        href={`/${clubKey}/Stats`}
                         className={`z-10 mx-2 sm:mx-6 px-2 sm:px-4 py-2 transition-colors duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base ${
-                            pathname === '/Stats' ? 'text-blue-600' : 'hover:text-gray-600'
+                            pathname.includes('/Stats') ? 'text-blue-600' : 'hover:text-gray-600'
                         }`}
                     >
                         <ChartBarIcon className="w-4 h-4 sm:w-5 sm:h-5" />
