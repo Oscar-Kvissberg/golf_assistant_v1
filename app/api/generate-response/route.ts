@@ -5,12 +5,6 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 })
 
-interface OpenAIError {
-    message: string;
-    status?: number;
-    code?: string;
-}
-
 export async function POST(request: Request) {
     try {
         const body = await request.json()
@@ -89,10 +83,9 @@ export async function POST(request: Request) {
                 response: lastMessage.content[0].text.value
             })
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('OpenAI API fel:', error)
-            const openAIError = error as OpenAIError
-            const errorMessage = openAIError.message || 'Ett okänt fel uppstod vid kommunikation med assistenten'
+            const errorMessage = error?.message || 'Ett okänt fel uppstod vid kommunikation med assistenten'
             return NextResponse.json(
                 { error: errorMessage },
                 { status: 500 }
