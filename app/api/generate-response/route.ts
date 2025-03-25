@@ -25,62 +25,76 @@ export async function POST(request: Request) {
             )
         }
 
-        // Skapa en thread
-        const thread = await openai.beta.threads.create()
-        console.log('Thread skapad:', thread.id)
+        try {
+            // Skapa en thread
+            const thread = await openai.beta.threads.create()
+            console.log('Thread skapad:', thread.id)
 
-        // Skapa ett meddelande
-        await openai.beta.threads.messages.create(thread.id, {
-            role: 'user',
-            content: message
-        })
-        console.log('Meddelande skapat')
+            // Skapa ett meddelande
+            await openai.beta.threads.messages.create(thread.id, {
+                role: 'user',
+                content: message
+            })
+            console.log('Meddelande skapat')
 
-        // Kör assistenten
-        const run = await openai.beta.threads.runs.create(thread.id, {
-            assistant_id: assistantId
-        })
-        console.log('Run skapad:', run.id)
+            // Kör assistenten
+            const run = await openai.beta.threads.runs.create(thread.id, {
+                assistant_id: assistantId
+            })
+            console.log('Run skapad:', run.id)
 
-        // Vänta på svar
-        let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
-        while (runStatus.status !== 'completed') {
-            if (runStatus.status === 'failed' || runStatus.status === 'cancelled') {
-                console.error('Run misslyckades:', runStatus)
-                return NextResponse.json(
-                    { error: `Assistenten misslyckades: ${runStatus.status}` },
-                    { status: 500 }
-                )
+            // Vänta på svar med timeout på 30 sekunder
+            let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
+            let attempts = 0
+            const maxAttempts = 30 // 30 sekunder
+            
+            while (runStatus.status !== 'completed' && attempts < maxAttempts) {
+                if (runStatus.status === 'failed' || runStatus.status === 'cancelled') {
+                    console.error('Run misslyckades:', runStatus)
+                    throw new Error(`Assistenten misslyckades: ${runStatus.status}`)
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
+                attempts++
             }
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
-        }
 
-        // Hämta svaret - ta det sista (äldsta) meddelandet från assistenten
-        const messages = await openai.beta.threads.messages.list(thread.id)
-        const assistantMessages = messages.data.filter(msg => 
-            msg.role === 'assistant' && 
-            msg.content[0] && 
-            msg.content[0].type === 'text'
-        )
-        
-        // Ta det sista meddelandet (det äldsta)
-        const lastMessage = assistantMessages[assistantMessages.length - 1]
+            if (attempts >= maxAttempts) {
+                throw new Error('Timeout: Assistenten tog för lång tid på sig att svara')
+            }
 
-        if (!lastMessage || !lastMessage.content[0] || lastMessage.content[0].type !== 'text') {
-            console.error('Inget giltigt svar mottaget:', messages)
+            // Hämta svaret
+            const messages = await openai.beta.threads.messages.list(thread.id)
+            const assistantMessages = messages.data.filter(msg => 
+                msg.role === 'assistant' && 
+                msg.content[0] && 
+                msg.content[0].type === 'text'
+            )
+            
+            if (assistantMessages.length === 0) {
+                throw new Error('Inget svar mottaget från assistenten')
+            }
+
+            const lastMessage = assistantMessages[assistantMessages.length - 1]
+            if (!lastMessage.content[0] || lastMessage.content[0].type !== 'text') {
+                throw new Error('Ogiltigt svar från assistenten')
+            }
+
+            return NextResponse.json({
+                response: lastMessage.content[0].text.value
+            })
+
+        } catch (error: any) {
+            console.error('OpenAI API fel:', error)
+            const errorMessage = error?.message || 'Ett okänt fel uppstod vid kommunikation med assistenten'
             return NextResponse.json(
-                { error: 'Inget giltigt svar mottaget från assistenten' },
+                { error: errorMessage },
                 { status: 500 }
             )
         }
 
-        return NextResponse.json({
-            response: lastMessage.content[0].text.value
-        })
-
     } catch (error) {
         console.error('Detaljerat fel:', error)
+        // Säkerställ att vi alltid returnerar ett giltigt JSON-svar
         return NextResponse.json(
             { error: `Ett fel uppstod: ${error instanceof Error ? error.message : 'Okänt fel'}` },
             { status: 500 }
