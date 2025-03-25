@@ -4,6 +4,59 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { clubs } from '../config/clubs';
 
+const EXAMPLE_EMAILS = [
+    {
+        label: "Medlemskap & Förmåner",
+        text: `Hej,
+
+Jag har en fråga kring era medlemskap. Om jag skulle teckna ett Park-medlemskap och ibland vilja spela på TC-banan, är det möjligt att göra det och finns det någon rabatt för Park-medlemmar i sådana fall? Jag är även nyfiken på hur medlemslånen fungerar för TC och Classic-medlemskap. Är det några specifika villkor jag bör känna till?
+
+Tack på förhand för hjälpen!
+
+Vänliga hälsningar,
+Mohamed Salah`
+    },
+    {
+        label: "Banstatus & Greenfee",
+        text: `Hej,
+
+Jag har ett par frågor angående era banor. Jag såg att Classic Course är under hålpipning och erbjuder reducerad greenfee under läktiden. Hur ofta uppdateras banstatusen på hemsidan, och vad händer om jag bokar en tid och det visar sig vara frost eller banan fortfarande läker?
+
+Jag skulle även vilja veta hur reducerad greenfee fungerar rent praktiskt om man redan har ett medlemskap.
+
+Tack för informationen!
+
+Med vänlig hälsning,
+Trent Alexander-Arnold`
+    },
+    {
+        label: "Restaurang & Betalning",
+        text: `Hej,
+
+Jag har en fråga kring Vasatorpskortet och era kiosker. Om man glömmer sitt Vasatorpskort hemma, går det att koppla det till en app eller någon annan lösning för att ändå kunna få rabatt när man handlar i kiosken eller restaurangen?
+
+Dessutom undrar jag om det är möjligt att boka bord i restaurangen i förväg, eller om det är först till kvarn som gäller? Vart bokar man detta isåfall?
+
+Tack på förhand!
+
+Vänliga hälsningar,
+Andy Robertson`
+    },
+    {
+        label: "Träning & Driving Range",
+        text: `Hej,
+
+Jag undrar lite kring era träningsmöjligheter. Hur ofta har jag som vanlig medlem möjlighet att använda Trackman Range, och finns det några begränsningar för när man kan träna där?
+
+Jag har även sett att det erbjuds rabatter på Driving Range under sportlovsveckan. Om jag har ett saldo på GolfMore-appen, gäller rabatten automatiskt när jag köper bollar, eller behöver jag göra något särskilt för att aktivera den?
+
+Tack för hjälpen!
+
+Med vänlig hälsning,
+Virgil van Dijk`
+    }
+];
+
 export default function OpenAIBot() {
     const pathname = usePathname();
     const club = pathname.split('/')[1];
@@ -14,28 +67,56 @@ export default function OpenAIBot() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [textareaHeight, setTextareaHeight] = useState('300px');
     const responseTextareaRef = useRef<HTMLTextAreaElement>(null);
+    const messageTextareaRef = useRef<HTMLTextAreaElement>(null);
+    const selectRef = useRef<HTMLSelectElement>(null);
 
-    // Funktion för att uppdatera textareans höjd
-    const adjustTextareaHeight = () => {
-        const textarea = responseTextareaRef.current;
-        if (textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = `${Math.max(300, textarea.scrollHeight)}px`;
+    const handleExampleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedExample = EXAMPLE_EMAILS.find(email => email.label === e.target.value);
+        if (selectedExample) {
+            setMessage(selectedExample.text);
         }
     };
 
-    // Uppdatera höjden när svaret ändras
-    useEffect(() => {
-        if (response) {
-            adjustTextareaHeight();
-        }
-    }, [response]);
-
-    const clearChat = () => {
+    const handleClearMessage = () => {
         setMessage('');
-        setResponse('');
+        if (selectRef.current) {
+            selectRef.current.value = '';
+        }
     };
+
+    // Uppdaterad funktion för att justera textareans höjd
+    const adjustTextareaHeight = () => {
+        const messageTextarea = messageTextareaRef.current;
+        const responseTextarea = responseTextareaRef.current;
+        
+        if (messageTextarea && responseTextarea) {
+            // Återställ höjden temporärt för att få korrekt scrollHeight
+            messageTextarea.style.height = 'auto';
+            responseTextarea.style.height = 'auto';
+            
+            // Beräkna maxhöjden mellan de två textareas
+            const messageHeight = messageTextarea.scrollHeight;
+            const responseHeight = responseTextarea.scrollHeight;
+            const newHeight = `${Math.max(300, messageHeight, responseHeight)}px`;
+            
+            // Applicera samma höjd på båda
+            setTextareaHeight(newHeight);
+            messageTextarea.style.height = newHeight;
+            responseTextarea.style.height = newHeight;
+        }
+    };
+
+    // Hantera meddelande-input ändringar
+    const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setMessage(e.target.value);
+    };
+
+    // Effekt för att övervaka ändringar i både message och response
+    useEffect(() => {
+        adjustTextareaHeight();
+    }, [message, response]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -96,13 +177,54 @@ export default function OpenAIBot() {
 
                 <div className="grid gap-8 md:grid-cols-2">
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold text-gray-700">Ditt Meddelande</h2>
+                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Ditt Meddelande</h2>
+                        <div className="flex items-center gap-2 mb-4">
+                            <select
+                                ref={selectRef}
+                                onChange={handleExampleSelect}
+                                className="text-sm border border-gray-200 rounded-lg p-2 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500/20 w-32"
+                                defaultValue=""
+                            >
+                                <option value="" disabled>Exempel</option>
+                                {EXAMPLE_EMAILS.map((email, index) => (
+                                    <option key={index} value={email.label}>
+                                        {email.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                onClick={handleSubmit}
+                                disabled={isLoading}
+                                className={`
+                                    px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-lg
+                                    ${isLoading 
+                                        ? 'bg-gray-400 cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition-opacity'
+                                    }
+                                    text-white text-sm
+                                `}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                        <span>Skickar...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Generera Svar</span>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7-7 7M5 5l7 7-7 7" />
+                                        </svg>
+                                    </>
+                                )}
+                            </button>
                             {message && (
                                 <button
-                                    onClick={clearChat}
+                                    onClick={handleClearMessage}
                                     className="text-gray-500 hover:text-red-500 transition-colors"
-                                    title="Rensa chat"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -111,17 +233,19 @@ export default function OpenAIBot() {
                             )}
                         </div>
                         <textarea
+                            ref={messageTextareaRef}
                             className="w-full p-4 border border-gray-200 rounded-lg min-h-[300px] bg-gray-50/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             value={message}
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={handleMessageChange}
                             placeholder="Skriv ditt meddelande här..."
                             disabled={isLoading}
+                            style={{ resize: 'none', overflow: 'hidden', height: textareaHeight }}
                         />
                     </div>
 
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold text-gray-700">Assistentens Svar</h2>
+                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Assistentens Svar</h2>
+                        <div className="flex items-center gap-2 mb-4">
                             <button
                                 onClick={() => {
                                     if (response) {
@@ -131,63 +255,42 @@ export default function OpenAIBot() {
                                     }
                                 }}
                                 disabled={!response}
-                                className={`p-2 rounded-lg flex items-center gap-1 relative ${
-                                    response 
-                                        ? 'bg-purple-50 text-purple-500 hover:bg-purple-100 transition-colors' 
-                                        : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                                }`}
+                                className={`
+                                    px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-lg
+                                    ${!response 
+                                        ? 'bg-gray-400 cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition-opacity'
+                                    }
+                                    text-white text-sm
+                                `}
                                 title="Kopiera svar"
                             >
                                 {copySuccess ? (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
+                                    <>
+                                        <span>Kopierat!</span>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </>
                                 ) : (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                    </svg>
-                                )}
-                                {copySuccess && (
-                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm py-1 px-2 rounded whitespace-nowrap">
-                                        Kopierat!
-                                    </span>
+                                    <>
+                                        <span>Kopiera Svar</span>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
+                                    </>
                                 )}
                             </button>
                         </div>
                         <textarea
                             ref={responseTextareaRef}
-                            className="w-full p-4 border border-gray-200 rounded-lg min-h-[300px] h-auto bg-gray-50/80 backdrop-blur-sm focus:outline-none"
+                            className="w-full p-4 border border-gray-200 rounded-lg min-h-[300px] bg-gray-50/80 backdrop-blur-sm focus:outline-none"
                             value={response}
                             readOnly
                             placeholder={isLoading ? "Assistenten skriver..." : "Assistentens svar kommer att visas här..."}
-                            style={{ height: 'auto', minHeight: '300px', resize: 'none' }}
+                            style={{ resize: 'none', overflow: 'hidden', height: textareaHeight }}
                         />
                     </div>
-                </div>
-
-                <div className="mt-8 flex justify-center">
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isLoading}
-                        className={`
-                            px-8 py-4 rounded-lg font-semibold flex items-center gap-2
-                            ${isLoading 
-                                ? 'bg-gray-400 cursor-not-allowed' 
-                                : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 transition-opacity'
-                            }
-                            text-white
-                        `}
-                    >
-                        {isLoading ? (
-                            <>
-                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                </svg>
-                                <span>Skickar...</span>
-                            </>
-                        ) : 'Skicka Meddelande'}
-                    </button>
                 </div>
             </div>
         </div>

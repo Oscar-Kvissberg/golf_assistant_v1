@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts'
 
 const TOP_QUESTIONS = [
     "Hur kan jag boka en tid?",
@@ -10,12 +11,21 @@ const TOP_QUESTIONS = [
     "Hur kommer jag hit?"
 ]
 
+// Exempel-data för cirkeldiagram
+const questionCategories = [
+    { name: 'Bokning (35%)', value: 35 },
+    { name: 'Priser (25%)', value: 25 },
+    { name: 'Öppettider (20%)', value: 20 },
+    { name: 'Faciliteter (15%)', value: 15 },
+    { name: 'Vägbeskrivning (5%)', value: 5 }
+]
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+
 export default function Stats() {
     const [emailCount, setEmailCount] = useState(0)
     const [timeSaved, setTimeSaved] = useState(0)
-    const [golfBalls, setGolfBalls] = useState(0)
-    const [funFact, setFunFact] = useState('')
-
+    
     useEffect(() => {
         // Ladda statistik från localStorage
         const count = parseInt(localStorage.getItem('emailGenerationCount') || '0')
@@ -23,43 +33,53 @@ export default function Stats() {
         
         // Beräkna tid sparad (5 minuter per mail)
         setTimeSaved(count * 5)
-        
-        // Beräkna golfbollar (1 golfboll per mail)
-        setGolfBalls(count)
-        
-        // Generera rolig fakta baserat på antal golfbollar
-        if (count > 0) {
-            const facts = [
-                `Detta motsvarar ${count} golfbollar!`,
-                `Detta är lika många golfbollar som i ${Math.ceil(count / 12)} golfbollspåsar!`,
-                `Om du skulle lägga ut alla dessa golfbollar på en rad skulle den vara ${count * 4.27} meter lång!`,
-                `Detta är tillräckligt med golfbollar för ${Math.ceil(count / 18)} rundor golf!`
-            ]
-            setFunFact(facts[Math.floor(Math.random() * facts.length)])
-        }
     }, [])
 
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {/* Statistik-kort */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Genererade Mail</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">Antal genererade mail</h3>
                 <p className="text-3xl font-bold text-blue-600">{emailCount}</p>
             </div>
             
             <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Tid Sparad</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">Estimerad tid sparad</h3>
                 <p className="text-3xl font-bold text-green-600">{timeSaved} min</p>
             </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Golfbollar</h3>
-                <p className="text-3xl font-bold text-purple-600">{golfBalls}</p>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Rolig Fakta</h3>
-                <p className="text-lg text-gray-600">{funFact}</p>
+
+            {/* Cirkeldiagram för frågekategorier */}
+            <div className="md:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">Frågekategorier</h3>
+                <div className="h-[250px] -ml-8">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                            <Pie
+                                data={questionCategories}
+                                cx="45%"
+                                cy="50%"
+                                labelLine={false}
+                                outerRadius={85}
+                                fill="#8884d8"
+                                dataKey="value"
+                            >
+                                {questionCategories.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Legend 
+                                layout="vertical" 
+                                verticalAlign="middle" 
+                                align="right"
+                                wrapperStyle={{ 
+                                    paddingLeft: '0px',
+                                    fontSize: '13px',
+                                    lineHeight: '24px'
+                                }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
 
             {/* Vanliga frågor */}

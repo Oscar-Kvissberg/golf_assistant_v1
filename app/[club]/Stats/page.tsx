@@ -12,7 +12,7 @@ export default async function StatsPage({ params }: Props) {
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Statistik för {clubConfig.displayName}</h1>
+          <h1 className="text-3xl font-bold mb-6">Statistik för {clubConfig.displayName} (in progress...)</h1>
       <Stats />
     </div>
   )

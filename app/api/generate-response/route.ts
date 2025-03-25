@@ -56,31 +56,28 @@ export async function POST(request: Request) {
             runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id)
         }
 
-        // Hämta svaret
+        // Hämta svaret - ta det sista (äldsta) meddelandet från assistenten
         const messages = await openai.beta.threads.messages.list(thread.id)
-        const assistantMessage = messages.data[0]
+        const assistantMessages = messages.data.filter(msg => 
+            msg.role === 'assistant' && 
+            msg.content[0] && 
+            msg.content[0].type === 'text'
+        )
+        
+        // Ta det sista meddelandet (det äldsta)
+        const lastMessage = assistantMessages[assistantMessages.length - 1]
 
-        if (!assistantMessage || !assistantMessage.content || !assistantMessage.content[0]) {
-            console.error('Inget svar mottaget:', messages)
+        if (!lastMessage || !lastMessage.content[0] || lastMessage.content[0].type !== 'text') {
+            console.error('Inget giltigt svar mottaget:', messages)
             return NextResponse.json(
-                { error: 'Inget svar mottaget från assistenten' },
+                { error: 'Inget giltigt svar mottaget från assistenten' },
                 { status: 500 }
             )
         }
 
-        const messageContent = assistantMessage.content[0]
-
-        if ('text' in messageContent) {
-            return NextResponse.json({
-                response: messageContent.text.value || messageContent.text
-            })
-        }
-
-        console.error('Oväntat svarsformat:', messageContent)
-        return NextResponse.json(
-            { error: 'Oväntat svarsformat från assistenten' },
-            { status: 500 }
-        )
+        return NextResponse.json({
+            response: lastMessage.content[0].text.value
+        })
 
     } catch (error) {
         console.error('Detaljerat fel:', error)
