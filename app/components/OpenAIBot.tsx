@@ -244,7 +244,7 @@ export default function OpenAIBot() {
                     </div>
 
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Assistentens Svar</h2>
+                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Genererat svar</h2>
                         <div className="flex items-center gap-2 mb-4">
                             <button
                                 onClick={() => {
