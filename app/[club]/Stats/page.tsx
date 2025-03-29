@@ -6,6 +6,12 @@ type Props = {
   params: Promise<{ club: string }>
 }
 
+export async function generateStaticParams() {
+  return Object.keys(clubs).map((club) => ({
+    club: club,
+  }))
+}
+
 export default async function StatsPage({ params }: Props) {
   const { club } = await params
   const clubConfig = clubs[club] || clubs.vasatorp
