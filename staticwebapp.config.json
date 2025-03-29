@@ -1,7 +1,9 @@
 {
   "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/images/*", "/css/*", "/js/*", "/*.{png,jpg,gif,svg,ico}"]
+    "rewrite": "/index.html"
+  },
+  "platform": {
+    "apiRuntime": "node:18"
   },
   "routes": [
     {
@@ -9,5 +11,6 @@
       "methods": ["GET", "POST"],
       "rewrite": "/api/index"
     }
-  ]
+  ],
+  "trailingSlash": "auto"
 } 
