@@ -1,0 +1,13 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/images/*", "/css/*", "/js/*", "/*.{png,jpg,gif,svg,ico}"]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "methods": ["GET", "POST"],
+      "rewrite": "/api/index"
+    }
+  ]
+} 
