@@ -13,10 +13,10 @@ export const clubs: Record<string, ClubConfig> = {
         logo: '/Vasatorp_logga.png'
     },
     klubb_a: {
-        name: 'klubb_a',
-        displayName: 'Klubb A',
+        name: 'Rattvik',
+        displayName: 'Rättvik GK',
         assistantId: 'asst_abc123def456ghi789',
-        logo: '/klubb_a_logo.png'
+        logo: '/Rättvik_logga.png'
     },
     klubb_b: {
         name: 'klubb_b',
@@ -30,10 +30,4 @@ export const clubs: Record<string, ClubConfig> = {
         assistantId: 'asst_mno123pqr456stu789',
         logo: '/klubb_c_logo.png'
     },
-    // Lägg till fler klubbar här
-    // Exempel:
-    // another_club: {
-    //     name: 'Another Club',
-    //     assistantId: 'asst_xxxxx'
-    // }
 }; 
