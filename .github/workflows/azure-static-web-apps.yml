@@ -18,8 +18,6 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -27,11 +25,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/" # App source code path
-          output_location: "standalone/.next" # Built app content directory
-          skip_api_build: true # Skip building API
-          app_build_command: "npm run build"
-          is_static_export: true
+          app_location: "/"
+          output_location: "out"
+          skip_api_build: true
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
