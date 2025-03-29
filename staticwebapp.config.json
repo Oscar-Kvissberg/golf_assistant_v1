@@ -2,5 +2,17 @@
   "navigationFallback": {
     "rewrite": "/index.html"
   },
-  "trailingSlash": "auto"
+  "trailingSlash": "auto",
+  "routes": [
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    }
+  ],
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html"
+    }
+  }
 } 
